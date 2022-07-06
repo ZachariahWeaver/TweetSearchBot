@@ -21,7 +21,13 @@ def getText(tweetNumber):
     return '{tweetText}'.format()
 
 def main():
-
+    reddit = praw.Reddit(
+        client_id = "123",
+        client_secret="abc",
+        password="xyz",
+        user_agent="Console:SaleNotifierBot:v1.0 (by u/z_weaver))",
+        username="TweetSearchBot",
+    )
     ryancohen_dict = {
         "i": [149],
         "have": [149],
