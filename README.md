@@ -1,0 +1,1 @@
+A reddit bot that scans new comments for search requests, will reply to the comment with a formatted response of matching tweets.
