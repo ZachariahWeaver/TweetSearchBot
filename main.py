@@ -1,8 +1,10 @@
-import praw
-import tweepy
-import re
-import string
-import time
+#import praw
+#import tweepy
+#import re
+#import string
+#import time
+import configparser
+
 
 
 def getLink(tweetNumber): #method to pull the link from a specified tweet in database
@@ -23,7 +25,8 @@ def getText(tweetNumber):
 
 def main(): #main method which runs on a loop to take in all new comments in specified subreddit
 
-
+    config = configparser.ConfigParser()
+    config.read('CONFIG.INI')
     twitterUser_dict = { #sample data which will eventually be stored in database
         "i": [149],
         "have": [149],
@@ -50,8 +53,4 @@ def main(): #main method which runs on a loop to take in all new comments in spe
         "achievement": [148],
 
     }
-
-
-
-
 main()

@@ -1,7 +1,7 @@
 reddit = praw.Reddit(
-    client_id=getRedditClientID(),  # dummy data to keep keys private
-    client_secret=getRedditClientSecret(),
-    password=getRedditPassword(),
+    client_id= config['reddit']['clientid'],  # dummy data to keep keys private
+    client_secret= config['reddit']['clientsecret'],
+    password = config['reddit']['password'],
     user_agent="Console:SaleNotifierBot:v1.0 (by u/z_weaver))",
     username="TweetSearchBot",
 )
