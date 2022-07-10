@@ -28,16 +28,19 @@ conn = psycopg2.connect(
 
 cursor = conn.cursor()
 
-postgres_insert_query = """ INSERT INTO tweet (word, tweetnumber) VALUES (%s,%s)"""
+postgres_insert_query = """INSERT INTO tweet (word, tweetnumber) VALUES (%s,%s) ON DUPLICATE KEY UPDATE word = word, tweetnumber = tweetnumber """
 
 for d in temp:
-    word = d.get('text')
-    numbers = [d.get('id')]
+    word = (d.get('text').lower()).split(" ")
+    numbers = d.get('id')
+    for w in word:
+        postgreSQL_select_Query = "DO $$ BEGIN IF EXISTS( SELECT * FROM tweet WHERE word = '%s') THEN UPDATE tweet SET word = word, tweetnumber = array_append(tweetnumber, %s); ELSE INSERT INTO tweet(word, tweetnumber) VALUES('%s', '{%s}'); END IF; END $$;" % (w, numbers, w, numbers)
 
-    record_to_insert = (word, numbers)
-    cursor.execute(postgres_insert_query, record_to_insert)
+        cursor.execute(postgreSQL_select_Query)
+        conn.commit()
+        count = cursor.rowcount
+        print(count, "Record inserted successfully into table")
 
-    conn.commit()
-    count = cursor.rowcount
-    print(count, "Record inserted successfully into mobile table")
 
+cursor.close()
+conn.close()
