@@ -1,5 +1,5 @@
 import configparser
-
+import string
 import requests
 import tweepy
 import psycopg2
@@ -28,18 +28,21 @@ conn = psycopg2.connect(
 
 cursor = conn.cursor()
 
-postgres_insert_query = """INSERT INTO tweet (word, tweetnumber) VALUES (%s,%s) ON DUPLICATE KEY UPDATE word = word, tweetnumber = tweetnumber """
-
 for d in temp:
-    word = (d.get('text').lower()).split(" ")
     numbers = d.get('id')
-    for w in word:
-        postgreSQL_select_Query = "DO $$ BEGIN IF EXISTS( SELECT * FROM tweet WHERE word = '%s') THEN UPDATE tweet SET word = word, tweetnumber = array_append(tweetnumber, %s); ELSE INSERT INTO tweet(word, tweetnumber) VALUES('%s', '{%s}'); END IF; END $$;" % (w, numbers, w, numbers)
+    text = d.get('text').lower()
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    word = text.split()
+    word = list(set(word))
+    print(word)
 
+
+    for w in word:
+        postgreSQL_select_Query = "DO $$ BEGIN IF EXISTS( SELECT 1 FROM tweet WHERE word = '%s') THEN UPDATE tweet SET word = word, tweetnumber = array_append(tweetnumber, %s) WHERE word = '%s'; ELSE INSERT INTO tweet(word, tweetnumber) VALUES('%s', '{%s}'); END IF; END $$;" % (w, numbers, w, w, numbers)
         cursor.execute(postgreSQL_select_Query)
         conn.commit()
         count = cursor.rowcount
-        print(count, "Record inserted successfully into table")
+        print("Record inserted successfully into table", w, numbers)
 
 
 cursor.close()

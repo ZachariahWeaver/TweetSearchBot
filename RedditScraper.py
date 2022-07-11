@@ -1,15 +1,39 @@
+import configparser
+import string
+import psycopg2
+import praw
+import random
+
+
+config = configparser.ConfigParser()
+config.read('CONFIG.INI')
+
 reddit = praw.Reddit(
-    client_id= config['reddit']['clientid'],  # dummy data to keep keys private
-    client_secret= config['reddit']['clientsecret'],
-    password = config['reddit']['password'],
+    client_id=config['reddit']['clientid'],  # dummy data to keep keys private
+    client_secret=config['reddit']['clientsecret'],
+    password=config['reddit']['password'],
     user_agent="Console:SaleNotifierBot:v1.0 (by u/z_weaver))",
     username="TweetSearchBot",
 )
 
+conn = psycopg2.connect(
+    host=config['postgresql']['host'],
+    database=config['postgresql']['database'],
+    user=config['postgresql']['user'],
+    password=config['postgresql']['password'])
+
+cursor = conn.cursor()
+
+
+def getLink(tweetnumber):
+    account = 'fake'
+    return ("https://twitter.com/user/status/%s") % (tweetnumber, )
+
+
 for comment in reddit.subreddit("test").stream.comments(skip_existing=True):
-    print("New comment detected! \n")  # console statement to show bot is detecting new comments
+    print("New comment detected! \n" + comment.body)  # console statement to show bot is detecting new comments
     reply = ""  # Start with an empty string which will be added to making the final reply
-    fail = "\n \n Unfortunately the words you requested were not found all at once in any one tweet! Try again using fewer terms or checking your spelling."
+    fail = False
     if comment.body[:4] == "!TSB" and len(
             comment.body) < 286:  # check for request marker and refuse requests that are too long
         print("Comment requests bot utility!\n \n")
@@ -21,28 +45,34 @@ for comment in reddit.subreddit("test").stream.comments(skip_existing=True):
         s = s.split()  # create an array of lower case words to check f
 
         if s:
-            a = twitterUserdict[s[0]]
+            postgres_select_query = """SELECT tweetnumber FROM tweet WHERE word = '%s'""" % (s[0], )
+            cursor.execute(postgres_select_query)
+            a = cursor.fetchone()[0]
+            print(a)
             for word in s:
-                if word in ryancohen_dict.keys():
-                    b = ryancohen_dict[word]
-                    a = list(set(a) & set(b))
-                else:
-                    reply = fail
-                    break
+                postgres_select_query = """SELECT tweetnumber FROM tweet WHERE word = '%s'""" % (word, )
+                cursor.execute(postgres_select_query)
+                tweetnumber_records = cursor.fetchone()[0]
+                a = list(set(a) & set(tweetnumber_records))
+                print(a)
         else:
-            reply = fail
+            fail = True
+            print("fail 2")
 
         if a:
             for id, tweet in enumerate(a):  # add all tweets that match to comment reply
-                reply = reply + "[Tweet " + str(id + 1) + "]" + "(" + getLink(tweet) + ") " + \
-                        "[Image " + str(id + 1) + "]" + "(" + getImage(tweet) + ") " + \
-                        getDate(tweet)
+                print(tweet)
+                reply = reply + "[Tweet " + str(id + 1) + "]" + "(" + getLink(tweet) + ") \n"
         else:
-            reply = fail
+            fail = True
+            print("fail 3")
 
         word_list = str(s)
         word_list = word_list.replace("\'", "")
+        if(fail):
+            print("Unfortunately the words you requested were not found all at once in any one tweet! Try again using fewer terms or checking your spelling.")
+            comment.reply(body=("Unfortunately the words you requested were not found all at once in any one tweet! Try again using fewer terms or checking your spelling."))
+        else:
+            print(reply_opening + "\n" + word_list + "\n" + reply)
 
-        print(reply_opening + "\n" + word_list + "\n" + reply)
-
-        comment.reply(reply_opening + word_list + "\n\n" + reply)
+            comment.reply(body = (reply_opening + word_list + "\n\n" + reply))
