@@ -1,0 +1,5 @@
+CREATE TABLE tweet(
+    word VARCHAR(280) PRIMARY KEY,
+    tweetnumber BIGINT[] 
+
+);

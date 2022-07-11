@@ -1,0 +1,8 @@
+CREATE TABLE tweetid(
+    tweetnumber BIGINT PRIMARY KEY,
+    tweettext VARCHAR(280),
+    tweetdate VARCHAR(25),
+    tweetimage VARCHAR (280),
+    tweetsource VARCHAR(30),
+    tweetmetrics VARCHAR(60)
+);

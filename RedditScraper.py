@@ -62,7 +62,24 @@ for comment in reddit.subreddit("test").stream.comments(skip_existing=True):
         if a:
             for id, tweet in enumerate(a):  # add all tweets that match to comment reply
                 print(tweet)
-                reply = reply + "[Tweet " + str(id + 1) + "]" + "(" + getLink(tweet) + ") \n"
+                reply = reply +(
+                "←       Tweet\n"\
+                "    ⬛⬛⬛ Ryan Cohen 🅥                                     …\n"
+                "    ⬛🧔⬛ @ryancohen\n"
+                "    ⬜⬜⬜\n"
+                "\n"
+                "    I’m sick of seeing failed executives make millions in risk\n"
+                "    free compensation while shareholders are left holding the\n"
+                "    bag\n"
+                "\n"
+                "    10:56 AM · Jun 29, 2022 · Twitter for iPhone\n"
+                "    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+                "\n"
+                "    4,323 Retweets      302 Quote Tweets      25.9K Likes\n"
+                "    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n"
+                "           🗨️             🔄             ❤️             🔗
+                "    ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n")
+                [Tweet " + str(id + 1) + "]" + "(" + getLink(tweet) + ") \n"
         else:
             fail = True
             print("fail 3")
@@ -70,8 +87,10 @@ for comment in reddit.subreddit("test").stream.comments(skip_existing=True):
         word_list = str(s)
         word_list = word_list.replace("\'", "")
         if(fail):
-            print("Unfortunately the words you requested were not found all at once in any one tweet! Try again using fewer terms or checking your spelling.")
-            comment.reply(body=("Unfortunately the words you requested were not found all at once in any one tweet! Try again using fewer terms or checking your spelling."))
+            print("Unfortunately the words you requested were not found all at once in any one tweet! Try again using "
+                  "fewer terms or checking your spelling.")
+            comment.reply(body=("Unfortunately the words you requested were not found all at once in any one tweet! "
+                                "Try again using fewer terms or checking your spelling."))
         else:
             print(reply_opening + "\n" + word_list + "\n" + reply)
 
