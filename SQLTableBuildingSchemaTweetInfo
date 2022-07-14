@@ -4,5 +4,7 @@ CREATE TABLE tweetid(
     tweetdate VARCHAR(25),
     tweetimage VARCHAR (280),
     tweetsource VARCHAR(30),
-    tweetmetrics VARCHAR(60)
+    tweetlikecount VARCHAR(60),
+    tweetquotecount VARCHAR(60),
+    tweetretweetcount VARCHAR(60)
 );
