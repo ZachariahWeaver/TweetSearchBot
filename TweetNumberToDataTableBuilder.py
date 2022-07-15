@@ -4,6 +4,6 @@
 WordsToTweetNumbers(tweet.text)
 
 INSERT INTO Tweets(number, source, created_at, attachments, text, public_metrics, id)
-VALUES (tweet.source, tweet.created_at, tweet.attachments, tweet.text, tweet.public_metrics, tweet.id);
+VALUES (tweet.source, tweet.created_at, tweet.attachments, tweet.text, tweet.public_metrics, tweet.index);
 
 
